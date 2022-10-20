@@ -21,6 +21,7 @@ require "models/developer"
 require "models/post"
 require "models/comment"
 require "models/rating"
+require "models/too_long_name"
 require "support/stubs/strong_parameters"
 require "support/async_helper"
 
@@ -143,6 +144,20 @@ class CalculationsTest < ActiveRecord::TestCase
   def test_should_group_by_multiple_fields
     c = Account.group("firm_id", :credit_limit).count(:all)
     [ [nil, 50], [1, 50], [6, 50], [6, 55], [9, 53], [2, 60] ].each { |firm_and_limit| assert_includes c.keys, firm_and_limit }
+  end
+
+  def test_should_group_by_multiple_fields_when_too_long_name
+    2.times do
+      TooLongName.create!(
+        toooooooooooo_long_column_name_1: 1,
+        toooooooooooo_long_column_name_2: 2
+      )
+    end
+
+    res = TooLongName.group(:toooooooooooo_long_column_name_1, :toooooooooooo_long_column_name_2).having("count(*) >= 2").count
+
+    # ここが期待通り動かない
+    assert_equal({ [1, 2] => 2 }, res)
   end
 
   def test_should_group_by_multiple_fields_having_functions

@@ -1081,6 +1081,11 @@ ActiveRecord::Schema.define do
     t.datetime :ending
   end
 
+  create_table :tooooooooooooooooooooooooooooooooooo_long_table_names, force: true do |t|
+    t.bigint :toooooooooooo_long_column_name_1, null: false
+    t.bigint :toooooooooooo_long_column_name_2, null: false
+  end
+
   create_table :topics, force: true do |t|
     t.string   :title, limit: 250
     t.string   :author_name
